@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChangdiCollectionDao">
+
+
+
+
+
+
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.changdi_id as changdiId
+        ,a.yonghu_id as yonghuId
+        ,a.changdi_collection_types as changdiCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ChangdiCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,changdi.changdi_uuid_number as changdiUuidNumber
+        ,changdi.changdi_name as changdiName
+        ,changdi.changdi_photo as changdiPhoto
+        ,changdi.changdi_types as changdiTypes
+        ,changdi.changdi_old_money as changdiOldMoney
+        ,changdi.changdi_new_money as changdiNewMoney
+        ,changdi.shijianduan as shijianduan
+        ,changdi.shijianduan_ren as shijianduanRen
+        ,changdi.changdi_clicknum as changdiClicknum
+        ,changdi.banquan_types as banquanTypes
+        ,changdi.shangxia_types as shangxiaTypes
+        ,changdi.tuijian as tuijian
+        ,changdi.changdi_delete as changdiDelete
+        ,changdi.changdi_content as changdiContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+
+        FROM changdi_collection  a
+        left JOIN changdi changdi ON a.changdi_id = changdi.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.changdiId != null and params.changdiId != ''">
+                and a.changdi_id = #{params.changdiId}
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.changdiCollectionTypes != null and params.changdiCollectionTypes != ''">
+                and a.changdi_collection_types = #{params.changdiCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断场地的id不为空 -->
+            <if test=" params.changdiIdNotNull != '' and params.changdiIdNotNull != null and params.changdiIdNotNull != 'null' ">
+                and a.changdi_id IS NOT NULL
+            </if>
+            <if test=" params.changdiUuidNumber != '' and params.changdiUuidNumber != null and params.changdiUuidNumber != 'null' ">
+                and changdi.changdi_uuid_number like CONCAT('%',#{params.changdiUuidNumber},'%')
+            </if>
+            <if test=" params.changdiName != '' and params.changdiName != null and params.changdiName != 'null' ">
+                and changdi.changdi_name like CONCAT('%',#{params.changdiName},'%')
+            </if>
+            <if test="params.changdiTypes != null  and params.changdiTypes != ''">
+                and changdi.changdi_types = #{params.changdiTypes}
+            </if>
+
+            <if test="params.changdiOldMoneyStart != null ">
+                <![CDATA[  and changdi.changdi_old_money >= #{params.changdiOldMoneyStart}   ]]>
+            </if>
+            <if test="params.changdiOldMoneyEnd != null ">
+                <![CDATA[  and changdi.changdi_old_money <= #{params.changdiOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.changdiNewMoneyStart != null ">
+                <![CDATA[  and changdi.changdi_new_money >= #{params.changdiNewMoneyStart}   ]]>
+            </if>
+            <if test="params.changdiNewMoneyEnd != null ">
+                <![CDATA[  and changdi.changdi_new_money <= #{params.changdiNewMoneyEnd}   ]]>
+            </if>
+            <if test=" params.shijianduan != '' and params.shijianduan != null and params.shijianduan != 'null' ">
+                and changdi.shijianduan like CONCAT('%',#{params.shijianduan},'%')
+            </if>
+            <if test="params.shijianduanRenStart != null  and params.shijianduanRenStart != '' ">
+                <![CDATA[  and changdi.shijianduan_ren >= #{params.shijianduanRenStart}   ]]>
+            </if>
+            <if test="params.shijianduanRenEnd != null  and params.shijianduanRenEnd != '' ">
+                <![CDATA[  and changdi.shijianduan_ren <= #{params.shijianduanRenEnd}   ]]>
+            </if>
+            <if test="params.shijianduanRen != null  and params.shijianduanRen != '' ">
+                and changdi.shijianduan_ren = #{params.shijianduanRen}
+            </if>
+            <if test="params.changdiClicknumStart != null  and params.changdiClicknumStart != '' ">
+                <![CDATA[  and changdi.changdi_clicknum >= #{params.changdiClicknumStart}   ]]>
+            </if>
+            <if test="params.changdiClicknumEnd != null  and params.changdiClicknumEnd != '' ">
+                <![CDATA[  and changdi.changdi_clicknum <= #{params.changdiClicknumEnd}   ]]>
+            </if>
+            <if test="params.changdiClicknum != null  and params.changdiClicknum != '' ">
+                and changdi.changdi_clicknum = #{params.changdiClicknum}
+            </if>
+            <if test="params.banquanTypes != null  and params.banquanTypes != ''">
+                and changdi.banquan_types = #{params.banquanTypes}
+            </if>
+
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and changdi.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test=" params.tuijian != '' and params.tuijian != null and params.tuijian != 'null' ">
+                and changdi.tuijian like CONCAT('%',#{params.tuijian},'%')
+            </if>
+            <if test="params.changdiDeleteStart != null  and params.changdiDeleteStart != '' ">
+                <![CDATA[  and changdi.changdi_delete >= #{params.changdiDeleteStart}   ]]>
+            </if>
+            <if test="params.changdiDeleteEnd != null  and params.changdiDeleteEnd != '' ">
+                <![CDATA[  and changdi.changdi_delete <= #{params.changdiDeleteEnd}   ]]>
+            </if>
+            <if test="params.changdiDelete != null  and params.changdiDelete != '' ">
+                and changdi.changdi_delete = #{params.changdiDelete}
+            </if>
+            <if test=" params.changdiContent != '' and params.changdiContent != null and params.changdiContent != 'null' ">
+                and changdi.changdi_content like CONCAT('%',#{params.changdiContent},'%')
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

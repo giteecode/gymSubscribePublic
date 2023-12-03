@@ -1,0 +1,517 @@
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>场地详情页</title>
+    <link rel="stylesheet" href="../../layui/css/layui.css">
+    <!-- 样式 -->
+    <link rel="stylesheet" href="../../css/style.css"/>
+    <!-- 主题（主要颜色设置） -->
+    <link rel="stylesheet" href="../../css/theme.css"/>
+    <!-- 通用的css -->
+    <link rel="stylesheet" href="../../css/common.css"/>
+    <link rel="stylesheet" href="../../xznstatic/css/bootstrap.min.css">
+</head>
+<style>
+    html::after {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        content: '';
+        display: block;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+    }
+
+    #swiper {
+        overflow: hidden;
+    }
+
+    #swiper .layui-carousel-ind li {
+        width: 16px;
+        height: 10px;
+        border-width: 0;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, .3);
+        border-radius: 3px;
+        background-color: #f7f7f7;
+        box-shadow: 0 0 6px rgba(255, 0, 0, .8);
+    }
+
+    #swiper .layui-carousel-ind li.layui-this {
+        width: 26px;
+        height: 10px;
+        border-width: 0;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, .3);
+        border-radius: 6px;
+        box-shadow: 0 0 6px rgba(255, 0, 0, .8);
+    }
+
+    input#buynumber::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    input#buynumber[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .message-container {
+        width: 100%
+    }
+
+    .data-detail {
+        padding-bottom: 20px;
+    }
+
+    .data-detail .layui-breadcrumb a.first {
+        color: rgba(14, 14, 14, 1) !important;
+    }</style>
+<body>
+
+    <div id="app">
+        <div class="data-detail">
+            <div class="sub_backgroundColor data-detail-breadcrumb" :style='{"padding":"0 10px","boxShadow":"0 0 0px rgba(255,0,0,.3)","margin":"20px auto","borderColor":"rgba(135, 206, 250, 1)","borderRadius":"4px","borderWidth":"0","borderStyle":"solid","height":"54px"}'>
+                <span class="layui-breadcrumb">
+                    <a class="first" :style='{"padding":"8px 10px","boxShadow":"0 0 6px rgba(255,0,0,0)","margin":"0 5px","borderColor":"rgba(255,0,0,.3)","backgroundColor":"rgba(255, 255, 255, 0)","color":"rgba(14, 14, 14, 1)","borderRadius":"0","borderWidth":"0","fontSize":"16px","borderStyle":"solid"}' href="../home/home.html">
+                        首页
+                    </a>
+                    <a>
+                        <cite :style='{"padding":"8px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","margin":"0 15px","borderColor":"rgba(255,0,0,.3)","backgroundColor":"rgba(255, 255, 255, 0)","color":"rgba(129, 84, 118, 1)","borderRadius":"4px","borderWidth":"0","fontSize":"16px","borderStyle":"solid"}'>
+                            {{title}}
+                        </cite>
+                    </a>
+                </span>
+                        <a v-if='storeupFlag' class="main_backgroundColor" :style='{"padding":"0 12px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(255,0,0,.3)","color":"rgba(255, 255, 255, 1)","borderRadius":"4px","borderWidth":"0","fontSize":"16px","lineHeight":"34px","borderStyle":"solid"}' @click="addChangdiCollection()" href="javascript:void(0)">
+                    <i class="layui-icon" style="font-size: 20px;color: red;" v-if='true' :style='{"color":"rgba(255, 255, 255, 1)","padding":"0 2px 0 0","fontSize":"18px"}'>&#xe67a;</i>取消收藏
+                </a>
+                <a v-if='!storeupFlag' class="main_backgroundColor" :style='{"padding":"0 12px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(255,0,0,.3)","color":"rgba(255, 255, 255, 1)","borderRadius":"4px","borderWidth":"0","fontSize":"16px","lineHeight":"34px","borderStyle":"solid"}' @click="addChangdiCollection()" href="javascript:void(0)">
+                    <i class="layui-icon" style="font-size: 20px;color: red;" v-if='true' :style='{"color":"rgba(255, 255, 255, 1)","padding":"0 2px 0 0","fontSize":"18px"}'>&#xe67b;</i>点我收藏
+                </a>
+            </div>
+            <div class="layui-row" style="display: flex">
+                <div class="layui-col-md5" style="width:420px">
+                    <div class="layui-carousel " id="swiper" :style='{"boxShadow":"0 0 2px rgba(160, 67, 26, 1)","margin":"0 auto","borderColor":"rgba(0,0,0,.3)","borderRadius":"6px","borderWidth":"0","width":"420px","borderStyle":"solid","height":"400px"}'>
+                        <div carousel-item>
+                            <div v-if="swiperList.length" v-for="(item,index) in swiperList" :key="index">
+                                <img style="width: 100%;height: 100%;object-fit:cover;" :src="item"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-col-md7 sub_borderColor" style="padding-left: 20px;flex: 1;" :style='{"padding":"0","boxShadow":"0 0 0px rgba(255,0,0,0)","margin":"0 0 0 20px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"1px","borderStyle":"solid"}'>
+                <h1 style="position: relative;" :style='{"padding":"10px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(160, 67, 26, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"0","textAlign":"center","borderWidth":"0px","fontSize":"18px","borderStyle":"solid"}' class="title">
+                    {{title}}
+                </h1>
+                    <div v-if="detail.changdiUuidNumber" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            场地编号：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.changdiUuidNumber}}
+                        </span>
+                    </div>
+                    <div class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            场地类型：
+                        </span>
+                        <span class="desc" style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' >
+                            {{detail.changdiValue}}
+                        </span>
+                    </div>
+                    <div v-if="detail.changdiOldMoney" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            场地原价：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.changdiOldMoney}}
+                        </span>
+                    </div>
+                    <div v-if="detail.changdiNewMoney" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            场地现价：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.changdiNewMoney}}
+                        </span>
+                    </div>
+                    <!--<div v-if="detail.shijianduan" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            时间段：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.shijianduan}}
+                        </span>
+                    </div>-->
+                    <div v-if="detail.shijianduanRen" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            人数：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.shijianduanRen}}
+                        </span>
+                    </div>
+                    <div v-if="detail.changdiClicknum" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            点击次数：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.changdiClicknum}}
+                        </span>
+                    </div>
+                    <div class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            半全场：
+                        </span>
+                        <span class="desc" style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' >
+                            {{detail.banquanValue}}
+                        </span>
+                    </div>
+                    <div v-if="detail.tuijian" class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <span :style='{"padding":"0 12px 0 0","minWidth":"110px","fontSize":"14px","color":"#333","textAlign":"left"}'>
+                            推荐吃饭地点：
+                        </span>
+                        <span style="word-break: break-all" :style='{"padding":"5px 15px","boxShadow":"0 0 0px rgba(255,0,0,.3)","borderColor":"rgba(135, 206, 250, 1)","backgroundColor":"#fff","color":"#333","borderRadius":"4px","textAlign":"left","borderWidth":"0","width":"auto","lineHeight":"24px","fontSize":"14px","borderStyle":"solid"}' class="desc">
+                            {{detail.tuijian}}
+                        </span>
+                    </div>
+                    <!--<div class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <button style="height:auto;" :style='{"padding":"0","boxShadow":"0 0 6px rgba(255,0,0,0)","margin":"0","borderColor":"rgba(0,0,0,.3)","backgroundColor":"rgba(244, 121, 131, 1)","color":"#666","borderRadius":"4px 0 0 4px","borderWidth":"1px","width":"34px","lineHeight":"34px","fontSize":"14px","borderStyle":"solid"}' type="button" @click="buyNumber>0?buyNumber&#45;&#45;:buyNumber" class="layui-btn layui-btn-primary">
+                            -
+                        </button>
+                        <input style="text-align:center;padding:10px 20px;width:300px;" :style='{"padding":"0","boxShadow":"0 0 6px rgba(255,0,0,0)","margin":"0","borderColor":"rgba(0,0,0,.3)","backgroundColor":"rgba(255, 242, 223, 1)","color":"rgba(255, 45, 81, 1)","borderRadius":"0","borderWidth":"1px 0","width":"44px","lineHeight":"34px","fontSize":"14px","borderStyle":"solid"}' type="number" v-model="buyNumber" id="buyNumber" name="buyNumber" class="layui-input" disabled="disabled" />
+                        <button style="height:auto;" :style='{"padding":"0","boxShadow":"0 0 6px rgba(255,0,0,0)","margin":"0","borderColor":"rgba(0,0,0,.3)","backgroundColor":"rgba(68, 206, 246, 1)","color":"#666","borderRadius":"0 4px 4px 0","borderWidth":"1px","width":"34px","lineHeight":"34px","fontSize":"14px","borderStyle":"solid"}' type="button" @click="buyNumber++" class="layui-btn layui-btn-primary">
+                            +
+                        </button>
+                        <button @click="addChangdiOrder()" style="height:auto;" :style='{"padding":"0 10px","boxShadow":"0 0 0px rgba(255,0,0,.3)","margin":"0 5px","borderColor":"rgba(0,0,0,.3)","backgroundColor":"rgba(23, 124, 176, 1)","color":"rgba(255, 255, 255, 1)","borderRadius":"6px","borderWidth":"0","width":"auto","lineHeight":"40px","fontSize":"16px","borderStyle":"solid"}' type="button" class="layui-btn btn-submit">
+                            立即购买
+                        </button>
+                    </div>-->
+                   <!-- <div class="detail-item main_borderColor" :style='{"padding":"6px 15px","backgroundColor":"#fff","borderRadius":"0","borderWidth":"0 0 1px 0","borderStyle":"solid"}'>
+                        <button :style='{"margin":"0 5px","borderColor":"rgba(0,0,0,.3)","color":"rgba(255, 255, 255, 1)","borderRadius":"4px","borderWidth":"0","width":"auto","lineHeight":"34px","fontSize":"14px","borderStyle":"solid"}'
+                                @click="onAcrossTap('dingdan')" type="button" class="layui-btn sub_backgroundColor sub_borderColor">
+                            预定
+                        </button>
+                    </div>-->
+                </div>
+            </div>
+
+            <div class="seat-list" :style='{"padding":"10px 0 10px 0","boxShadow":"0 0 5px var(--publicMainColor, #808080)","margin":"10px 0 0 0","backgroundColor":"rgba(255, 255, 255, 1)","borderRadius":"20px","borderWidth":"0","borderStyle":"solid"}'>
+                <div style="width: 100%">
+                    <span style="width: 20%;">订购日期：</span>
+                    <el-date-picker style="width:30%" v-model="buyTime" :picker-options="buyTimeOptions" @change ="changdiChange" type="date" placeholder="选择日期"></el-date-picker>
+                    <span style="width: 20%;">时间段：</span>
+                    <el-select style="width:30%" v-model="shijianduan" placeholder="请选择时间段">
+                        <el-option
+                                v-for="item in shijianduanList" :key="item.name" :label="item.name" :value="item.name" :disabled="item.select">
+                        </el-option>
+                    </el-select>
+                    <button @click="addChangdiOrder()" style="height:auto;" :style='{"padding":"0 10px","boxShadow":"0 0 0px var(--publicMainColor, #808080)","margin":"0 5px","borderColor":"rgba(0,0,0,.3)","backgroundColor":"var(--publicMainColor, #808080)","color":"rgba(255, 255, 255, 1)","borderRadius":"6px","borderWidth":"0","width":"auto","lineHeight":"40px","fontSize":"16px","borderStyle":"solid"}' type="button" class="layui-btn btn-submit">
+                        立即预定
+                    </button>
+                </div>
+            </div>
+
+                
+            <div class="layui-row detail-tab">
+                <div class="layui-tab layui-tab-card main_borderColor" :style='{"backgroundColor":"#fff","borderRadius":"10px","borderStyle":"solid","borderWidth":"1px"}' style="overflow: hidden;">
+                    <ul class="layui-tab-title main_color" :style='{"backgroundColor":"#f2f2f2","fontSize":"14px"}'>
+                        <li class="layui-this">详情</li>
+                    </ul>
+
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div v-html="myFilters(detail.changdiContent)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    </div>
+
+
+    <script src="../../layui/layui.js"></script>
+    <script src="../../js/vue.js"></script>
+    <!-- 引入element组件库 -->
+    <script src="../../xznstatic/js/element.min.js"></script>
+    <!-- 引入element样式 -->
+    <link rel="stylesheet" href="../../xznstatic/css/element.min.css">
+    <!-- 组件配置信息 -->
+    <script src="../../js/config.js"></script>
+    <!-- 扩展插件配置信息 -->
+    <script src="../../modules/config.js"></script>
+    <!-- 工具方法 -->
+    <script src="../../js/utils.js"></script>
+
+    <script>
+        Vue.prototype.myFilters= function (msg) {
+            if(msg != null){
+                return msg.replace(/\n/g, "<br>");
+            }else{
+                return "";
+            }
+        };
+        var vue = new Vue({
+            el: '#app',
+            data: {
+                // 轮播图
+                swiperList: [],
+                // 数据详情
+                detail: {
+                    id: 0
+                },
+                // 商品标题
+                title: '',
+
+                buyTime: getCurDate(),
+                shijianduan: "",
+                shijianduanList : [],
+                buyTimeOptions: {
+                    disabledDate(time) {//禁止时间
+                        var date = new Date();
+                        date.setTime(date.getTime()-24*60*60*1000);
+                        return time.getTime() < date;
+                    },
+                },
+
+
+
+
+
+
+                storeupFlag: 0,//收藏 [0为收藏 1已收藏]
+                //系统推荐
+                changdiRecommendList: [],
+    <!-- 是订单并且非座位才有购物车 -->
+                // 加入购物车数量
+                buyNumber: 1,
+                // 当前详情页表
+                detailTable: 'changdi',
+            },
+            methods: {
+                jump(url) {
+                    jump(url)
+                },
+                isAuth(tablename, button) {
+                    return isFrontAuth(tablename, button)
+                },
+                // 收藏商品
+                addChangdiCollection() {
+                    let _this = this;
+                    layui.http.request('changdiCollection/list', 'get', {
+                        page: 1,
+                        limit: 1,
+                        changdiId: _this.detail.id,
+                        changdiCollectionTypes: 1,
+                        yonghuId: localStorage.getItem('userid'),
+                    }, (res) => {
+                        if (res.data.list.length == 1) {
+                            layui.http.requestJson('changdiCollection/delete', 'post', [res.data.list[0].id], function (res) {
+                                layui.layer.msg('取消成功', {
+                                    time: 1000,
+                                    icon: 5
+                                }, function () {
+                                    window.location.reload();
+                                });
+                            });
+                            return false;
+                        }
+                        layui.http.requestJson('changdiCollection/add', 'post', {
+                            yonghuId: localStorage.getItem('userid'),
+                            changdiId: _this.detail.id,
+                            changdiCollectionTypes: 1,
+                        }, function (res) {
+                            layui.layer.msg('收藏成功', {
+                                time: 1000,
+                                icon: 6
+                            }, function () {
+                                window.location.reload();
+                            });
+                        });
+                    });
+                },
+                // 立即预定
+                addChangdiOrder() {
+                    let _this = this;
+                    if (_this.shijianduan == "" || _this.buyTime == "") {
+                        layer.msg(`请选择要预约的日期和时间段`, {
+                            time: 2000,
+                            icon: 5
+                        });
+                        return false;
+                    }
+
+                    layui.http.requestJson('changdiOrder/add', 'post', {
+                        // yonghuId: localStorage.getItem('userid'),
+                        changdiId: _this.detail.id,
+                        buyTime : _this.buyTime,
+                        shijianduan :_this.shijianduan,
+                    }, function (res) {
+                        if(res.code == 0){
+                            layui.layer.msg('预约成功', {
+                                time: 1000,
+                                icon: 6
+                            }, function () {
+                                jump('../changdiOrder/list.html');
+                            });
+                        }else{
+                            layui.layer.msg(res.msg, {
+                                time: 1000,
+                                icon: 5
+                            }, function () {
+                            });
+                        }
+                    });
+
+                },
+
+                changdiChange() {
+                    let _this = this;
+                    if(layui.jquery.type(this.buyTime) === "date"){//如果类型是日期的话，要格式化成字符串， 否则后台没法查询
+                        _this.buyTime =layui.util.toDateString(this.buyTime, 'yyyy-MM-dd');
+                    }
+                    layui.http.request(`changdiOrder/list`, 'get', {
+                            page: 1,
+                            limit: 100,
+                            changdiOrderDelete: 1,
+                            changdiId: _this.detail.id,
+                            buyTimeStart:_this.buyTime ,
+                            buyTimeEnd: _this.buyTime,
+                            notChangdiOrderTypes : 2,
+                    }, function (res) {
+                        //生成默认时间段
+                        _this.shijianduanList = [];
+                        _this.detail.shijianduan.split(",").forEach(element => {
+                            _this.shijianduanList.push({
+                                name: element,
+                                select: false
+                            });
+                        });
+
+
+                        // let list1 =[];
+                        // if(_this.buyTime =="2022-01-18"){
+                        //     list1.push({"shijianduan":"8-10"});
+                        //     list1.push({"shijianduan":"14-16"});
+                        // }else{
+                        //     list1.push({"shijianduan":"8-10"});
+                        //     list1.push({"shijianduan":"16-18"});
+                        //
+                        // }
+                        // res.data.list = list1;
+
+                        //生成时间段被占用
+                        if (res.data.list.length > 0) {
+                            res.data.list.forEach(element => {
+                                if (element.shijianduan != null) {
+                                    _this.shijianduanList.forEach(element1 => {
+                                        if(element1.name == element.shijianduan){
+                                            element1.select = true;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        _this.shijianduan = "";
+                    });
+                },
+
+            }
+        });
+
+        layui.use(['layer', 'form', 'element', 'carousel', 'http', 'jquery', 'laypage', 'util'], function () {
+            var layer = layui.layer;
+            var util = layui.util;
+            var element = layui.element;
+            var form = layui.form;
+            var carousel = layui.carousel;
+            var http = layui.http;
+            var jquery = layui.jquery;
+            var laypage = layui.laypage;
+
+            var limit = 10;
+
+            // 数据ID
+            var id = http.getParam('id');
+            vue.detail.id = id;
+            // 数据信息
+            http.request(`${vue.detailTable}/detail/` + id, 'get', {}, function (res) {
+                // 详情信息
+                vue.detail = res.data;
+                vue.title = vue.detail.changdiName;
+                // 轮播图片
+                vue.swiperList = vue.detail.changdiPhoto ? vue.detail.changdiPhoto.split(",") : [];
+                // 轮播图
+                vue.$nextTick(() => {
+                    carousel.render({
+                        elem: '#swiper',
+                        width: '420px',
+                        height: '400px',
+                        arrow: 'hover',
+                        anim: 'default',
+                        autoplay: 'true',
+                        interval: '3000',
+                        indicator: 'inside'
+                    });
+                });
+
+
+
+                <!-- 座位初始化 -->
+                vue.changdiChange();
+
+            });
+
+
+            // 系统推荐
+            http.request(`changdi/list`, 'get', {
+                page: 1,
+                limit: 5,
+                changdiTypes: vue.detail.changdiTypes,
+                changdiDelete: 1,
+                banquanTypes: vue.detail.banquanTypes,
+                shangxiaTypes: vue.detail.shangxiaTypes,
+            }, function (res) {
+                vue.changdiRecommendList = res.data.list;
+            });
+
+            if (localStorage.getItem('userid')) {
+                http.request('changdiCollection/list', 'get', {
+                    page: 1,
+                    limit: 1,
+                    changdiId: vue.detail.id,
+                    yonghuId: localStorage.getItem('userid'),
+                }, function (res) {
+                    if(res.data.total >0){
+                        res.data.list.forEach(element => {
+                            if (element.changdiCollectionTypes == 1) {
+                                vue.storeupFlag = 1;
+                            }
+                            if (element.changdiCollectionTypes == 2) {
+                                vue.zanFlag = 1;
+                            }
+                            if (element.changdiCollectionTypes == 3) {
+                                vue.caiFlag = 1;
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
